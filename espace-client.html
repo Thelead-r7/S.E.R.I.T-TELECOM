@@ -5,12 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Espace Client</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    #stars .star {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin: 10px 0;
+    }
+    .commentaire {
+      background: #f1f1f1;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    #formulaire-commentaire {
+      background: #e0f7fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <a href="index.html" class="retour-accueil">← Retour à l’accueil</a>
+  <a href="index.html" class="retour-accueil">← Retour à l’accueil</a>
   <h1>Bienvenue sur l'espace client</h1>
 
   <!-- Connexion utilisateur -->
@@ -42,30 +62,25 @@
     <button id="envoyerCommentaire">Envoyer</button>
   </section>
 
-  <script>
-    // Config Firebase
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+  <!-- Firebase + Script principal -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDPavrp_mfV0POiDF3V4ZOZ0SHZGwgTmGs",
-  authDomain: "serit-societe.firebaseapp.com",
-  projectId: "serit-societe",
-  storageBucket: "serit-societe.firebasestorage.app",
-  messagingSenderId: "25581120285",
-  appId: "1:25581120285:web:b8ee391fabf3d626480ff4"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPavrp_mfV0POiDF3V4ZOZ0SHZGwgTmGs",
+      authDomain: "serit-societe.firebaseapp.com",
+      projectId: "serit-societe",
+      storageBucket: "serit-societe.appspot.com",
+      messagingSenderId: "25581120285",
+      appId: "1:25581120285:web:b8ee391fabf3d626480ff4"
+    };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // Sélection d'éléments
     const loginBtn = document.getElementById('loginBtn');
     const userInfo = document.getElementById('user-info');
     const formSection = document.getElementById('formulaire-commentaire');
@@ -74,13 +89,17 @@ const app = initializeApp(firebaseConfig);
     const blueStar = document.getElementById('blue-star');
     let note = 0;
 
-    // Authentification
-    loginBtn.onclick = () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider);
-    };
+    loginBtn.addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Erreur de connexion :", error);
+        alert("Erreur de connexion avec Google.");
+      }
+    });
 
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         userInfo.textContent = `Connecté : ${user.displayName}`;
         formSection.style.display = 'block';
@@ -88,7 +107,7 @@ const app = initializeApp(firebaseConfig);
       }
     });
 
-    // Gestion des étoiles
+    // Étoiles
     stars.forEach(star => {
       star.addEventListener('click', () => {
         note = parseInt(star.dataset.value);
@@ -100,7 +119,7 @@ const app = initializeApp(firebaseConfig);
       });
     });
 
-    // Envoi commentaire
+    // Envoi du commentaire
     document.getElementById('envoyerCommentaire').onclick = async () => {
       const commentaire = document.getElementById('commentaire').value.trim();
       const etoileBleue = document.getElementById('etoile-bleue').checked;
@@ -111,7 +130,7 @@ const app = initializeApp(firebaseConfig);
         return;
       }
 
-      await db.collection("commentaires").add({
+      await addDoc(collection(db, "commentaires"), {
         nom: user.displayName,
         commentaire,
         note,
@@ -127,7 +146,8 @@ const app = initializeApp(firebaseConfig);
 
     // Affichage des commentaires
     async function afficherCommentaires() {
-      const snap = await db.collection("commentaires").orderBy("date", "desc").get();
+      const q = query(collection(db, "commentaires"), orderBy("date", "desc"));
+      const snap = await getDocs(q);
       listeCommentaires.innerHTML = "";
       snap.forEach(doc => {
         const data = doc.data();
@@ -143,31 +163,5 @@ const app = initializeApp(firebaseConfig);
 
     afficherCommentaires();
   </script>
-
-  <style>
-    #stars .star {
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    textarea {
-      width: 100%;
-      height: 80px;
-      margin: 10px 0;
-    }
-
-    .commentaire {
-      background: #f1f1f1;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-    }
-
-    #formulaire-commentaire {
-      background: #e0f7fa;
-      padding: 15px;
-      border-radius: 10px;
-    }
-  </style>
 </body>
-</html>
+  </html>
