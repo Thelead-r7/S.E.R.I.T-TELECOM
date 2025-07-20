@@ -1,33 +1,62 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mon Site</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Entreprise</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ===== Contenu principal de ton site ===== -->
   <header>
-    <h1>Bienvenue sur mon site</h1>
-    <p>Voici mon site hébergé sur GitHub avec Firebase.</p>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <h1 class="logo">Mon Entreprise</h1>
   </header>
 
-  <main>
-    <section>
-      <h2>Mes services</h2>
-      <p>Service 1, Service 2, Service 3...</p>
-    </section>
-  </main>
+  <nav id="sidebar">
+    <ul>
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="espace-client.html">Espace Client</a></li>
+      <li><a href="publication.html">Publications</a></li>
+      <li><a href="connexion-admin.html">Espace Admin</a></li>
+    </ul>
+  </nav>
+
+  <section class="banner">
+    <h2>Bienvenue chez Mon Entreprise</h2>
+    <p>Spécialiste en électricité et télécom.</p>
+  </section>
+
+  <section class="services">
+    <h3>Nos Services</h3>
+    <ul>
+      <li>Installation électrique</li>
+      <li>Maintenance industrielle</li>
+      <li>Réseaux télécom</li>
+    </ul>
+  </section>
+
+  <section class="gallery" id="gallery">
+    <h3>Galerie</h3>
+    <!-- Les images de Firebase s'afficheront ici -->
+  </section>
+
+  <section class="contact">
+    <h3>Contact</h3>
+    <p>Email : contact@monentreprise.com</p>
+    <p>Téléphone : +225 01 23 45 67 89</p>
+    <button onclick="window.location.href='tel:+2250123456789'">Appeler</button>
+  </section>
 
   <footer>
-    <p>&copy; 2025 Mon entreprise. Tous droits réservés.</p>
+    <p>&copy; 2025 Mon Entreprise - Tous droits réservés.</p>
   </footer>
 
-  <!-- ===== Console Eruda pour mobile (affiche erreurs dans console mobile) ===== -->
+  <script src="main.js" type="module"></script>
+
+  <!-- ✅ ERUDA pour console mobile -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 
 </body>
-</html>
+  </html>
