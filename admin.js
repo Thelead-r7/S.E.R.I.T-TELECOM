@@ -1,11 +1,25 @@
-
+// ✅ admin.js corrigé
 import { auth, db, storage } from "./firebase-config.js";
-import { doc, setDoc, serverTimestamp, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+  collection
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// UID unique de l’administrateur autorisé
 const adminUID = "Cz0wL0oT8PdsddwywLaNawqmPl93";
 
+// ✅ Vérification de l’authentification + autorisation
 onAuthStateChanged(auth, user => {
   if (!user) {
     alert("Accès refusé. Veuillez vous connecter.");
@@ -17,10 +31,12 @@ onAuthStateChanged(auth, user => {
   }
 });
 
+// ✅ Soumission du formulaire de publication
 document.getElementById("publicationForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const titre = document.getElementById("titre").value;
-  const description = document.getElementById("description").value;
+
+  const titre = document.getElementById("titre").value.trim();
+  const description = document.getElementById("description").value.trim();
   const image = document.getElementById("image").files[0];
 
   if (!titre || !description || !image) {
@@ -29,10 +45,12 @@ document.getElementById("publicationForm").addEventListener("submit", async (e) 
   }
 
   try {
+    // ✅ Upload image vers Firebase Storage
     const imageRef = ref(storage, "publications/" + Date.now() + "-" + image.name);
     const snapshot = await uploadBytes(imageRef, image);
     const imageUrl = await getDownloadURL(snapshot.ref);
 
+    // ✅ Sauvegarde dans Firestore
     await setDoc(doc(collection(db, "publications")), {
       titre,
       description,
@@ -42,8 +60,9 @@ document.getElementById("publicationForm").addEventListener("submit", async (e) 
 
     alert("Publication réussie !");
     document.getElementById("publicationForm").reset();
+
   } catch (error) {
     console.error("Erreur lors de la publication :", error);
-    alert("Une erreur est survenue.");
+    alert("Une erreur est survenue. Vérifiez votre connexion ou vos droits.");
   }
 });
