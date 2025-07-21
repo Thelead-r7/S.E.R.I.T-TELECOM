@@ -66,10 +66,22 @@
       font-size: 14px;
       color: #ff7070;
     }
+
+    .retour-accueil {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
-    <a href="index.html" class="retour-accueil">← Retour à l’accueil</a>
+  <a href="index.html" class="retour-accueil">← Retour à l’accueil</a>
   <div class="login-container">
     <h2>Connexion Admin</h2>
     <form id="login-form">
@@ -80,14 +92,12 @@
     </form>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <!-- Ton fichier de config Firebase -->
+  <!-- Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="firebase-config.js"></script>
 
   <script>
-    // Utilisation de l'auth Firebase importée dans firebase-config.js
     const auth = firebase.auth();
 
     const form = document.getElementById("login-form");
@@ -95,21 +105,18 @@
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      auth
-        .signInWithEmailAndPassword(email, password)
+      auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
           // Connexion réussie, redirection vers admin.html
           window.location.href = "admin.html";
         })
         .catch((error) => {
-          // Afficher l'erreur
           message.textContent = "Erreur : " + error.message;
         });
     });
   </script>
 </body>
-</html>
+        </html>
