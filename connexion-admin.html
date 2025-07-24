@@ -1,122 +1,141 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion Admin | SERIT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Espace Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #232526, #414345);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      color: #333;
     }
 
-    .login-container {
-      background: #2c2f33;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h2 {
+    header {
+      background: #0066cc;
+      color: white;
+      padding: 15px;
       text-align: center;
-      margin-bottom: 25px;
+      font-size: 22px;
+      font-weight: bold;
     }
 
-    input[type="email"],
+    main {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"],
     input[type="password"] {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      background: #444;
-      color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 16px;
     }
 
-    input[type="submit"] {
+    button {
       width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 10px;
-      background: #00adb5;
+      background: #0066cc;
       color: white;
+      padding: 14px;
       font-size: 18px;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s;
+      margin-top: 10px;
     }
 
-    input[type="submit"]:hover {
-      background: #007d83;
+    button:hover {
+      background: #004c99;
     }
 
-    .message {
-      margin-top: 15px;
+    .logout {
+      margin-top: 20px;
+      background: #ff4444;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .error {
       text-align: center;
-      font-size: 14px;
-      color: #ff7070;
+      color: red;
+      margin-top: 10px;
     }
 
-    .retour-accueil {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: #fff;
-      text-decoration: none;
+    footer {
+      text-align: center;
+      margin-top: 50px;
       font-size: 14px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 5px 10px;
-      border-radius: 5px;
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="retour-accueil">← Retour à l’accueil</a>
-  <div class="login-container">
-    <h2>Connexion Admin</h2>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="Email de l'admin" required />
-      <input type="password" id="password" placeholder="Mot de passe" required />
-      <input type="submit" value="Se connecter" />
-      <div class="message" id="message"></div>
-    </form>
-  </div>
 
-  <!-- Firebase compat SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <header>🛡️ Espace Administrateur</header>
+
+  <!-- ✅ Bloc de vérification (mot de passe ou UID) -->
+  <main id="verif-section">
+    <h3>Vérification d'accès</h3>
+    <input type="password" id="codeAdmin" placeholder="Entrez le code ou UID">
+    <button onclick="verifierAcces()">Valider</button>
+    <div class="error" id="erreurAcces"></div>
+  </main>
+
+  <!-- ✅ Section réelle du panneau admin (cachée au début) -->
+  <main id="admin-section" class="hidden">
+    <form id="form-pub">
+      <label for="titre">Titre :</label>
+      <input type="text" id="titre" placeholder="Titre de la publication" required>
+
+      <label for="contenu">Contenu :</label>
+      <textarea id="contenu" placeholder="Écrivez ici..." rows="6" required></textarea>
+
+      <label for="image">Image (optionnelle) :</label>
+      <input type="file" id="image" accept="image/*">
+
+      <button type="submit">📢 Publier</button>
+    </form>
+
+    <button id="logout" class="logout">🚪 Déconnexion</button>
+  </main>
+
+  <footer>&copy; 2025 | Admin sécurisé</footer>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
   <script src="firebase-config.js"></script>
+  <script src="admin.js"></script>
 
   <script>
-    const auth = firebase.auth();
+    function verifierAcces() {
+      const code = document.getElementById("codeAdmin").value.trim();
+      const adminCodeAutorise = "39yahW5x6UeOLSpLzghM5CNu3k73"; // ton code secret ou UID
 
-    const form = document.getElementById("login-form");
-    const message = document.getElementById("message");
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          // Connexion réussie, redirection vers admin.html
-          window.location.href = "admin.html";
-        })
-        .catch((error) => {
-          message.textContent = "Erreur : " + error.message;
-        });
-    });
+      if (code === adminCodeAutorise) {
+        document.getElementById("verif-section").classList.add("hidden");
+        document.getElementById("admin-section").classList.remove("hidden");
+      } else {
+        document.getElementById("erreurAcces").textContent = "Code incorrect.";
+      }
+    }
   </script>
 </body>
-        </html>
+      </html>
