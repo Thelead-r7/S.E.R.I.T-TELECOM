@@ -17,7 +17,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // UID unique de l’administrateur autorisé
-const adminUID = "Cz0wL0oT8PdsddwywLaNawqmPl93";
+const adminUID = "39yahW5x6UeOLSpLzghM5CNu3k73";
 
 // ✅ Vérification de l’authentification + autorisation
 onAuthStateChanged(auth, user => {
